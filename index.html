@@ -1,0 +1,1511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SchengenVisaItinerarySlot — Live Schengen Visa Appointment Alerts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0F1B33;
+    --navy-900:#14213D;
+    --navy-700:#233A63;
+    --navy-500:#3A5686;
+    --amber-600:#C97F1F;
+    --amber-500:#E8A33D;
+    --amber-100:#FBEBD2;
+    --green-700:#1E8E5A;
+    --green-100:#E1F3EA;
+    --rust-700:#B0442C;
+    --rust-100:#F7E1DB;
+    --paper-0:#FFFFFF;
+    --paper-50:#F5F6F8;
+    --paper-100:#ECEEF2;
+    --ink-900:#151B26;
+    --ink-600:#5B6472;
+    --ink-400:#8A93A3;
+    --line:#DEE2E9;
+    --radius-card:14px;
+    --radius-pill:999px;
+    --shadow-1:0 1px 2px rgba(15,27,51,.06), 0 1px 1px rgba(15,27,51,.04);
+    --shadow-2:0 12px 32px -12px rgba(15,27,51,.22);
+    --font-display:"Fraunces", serif;
+    --font-body:"IBM Plex Sans", sans-serif;
+    --font-mono:"IBM Plex Mono", monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--font-body);
+    color:var(--ink-900);
+    background:var(--paper-50);
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;}
+  .view{display:none;}
+  .view.active{display:block;animation:fadeIn .35s ease both;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  /* ===== Nav ===== */
+  .topbar{
+    background:var(--navy-950);
+    color:#EDEFF4;
+    font-size:12.5px;
+    padding:7px 0;
+  }
+  .topbar .wrap{display:flex;justify-content:space-between;max-width:1240px;margin:0 auto;padding:0 32px;color:#B9C1D1;}
+  .topbar .wrap span{margin-right:18px;}
+  nav.mainnav{
+    background:var(--paper-0);
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:40;
+  }
+  nav.mainnav .wrap{
+    max-width:1240px;margin:0 auto;padding:14px 32px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:600;font-size:21px;color:var(--navy-900);}
+  .brand .mark{
+    width:34px;height:34px;border-radius:8px;background:var(--navy-900);
+    display:flex;align-items:center;justify-content:center;color:var(--amber-500);
+    font-family:var(--font-mono);font-weight:600;font-size:15px;
+    transform:rotate(-4deg);
+  }
+  .navlinks{display:flex;gap:30px;font-size:14.5px;color:var(--ink-600);font-weight:500;}
+  .navlinks a{padding:6px 0;border-bottom:2px solid transparent;transition:.15s;cursor:pointer;}
+  .navlinks a:hover, .navlinks a.current{color:var(--navy-900);border-bottom-color:var(--amber-500);}
+  .navcta{display:flex;align-items:center;gap:14px;}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-700);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;}
+
+  /* ===== Buttons ===== */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:12px 22px;border-radius:10px;border:1px solid transparent;
+    font-weight:600;font-size:14.5px;transition:.15s;white-space:nowrap;
+  }
+  .btn-primary{background:var(--navy-900);color:#fff;}
+  .btn-primary:hover{background:var(--navy-700);}
+  .btn-amber{background:var(--amber-500);color:var(--navy-950);}
+  .btn-amber:hover{background:var(--amber-600);color:#fff;}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--navy-900);}
+  .btn-ghost:hover{border-color:var(--navy-500);}
+  .btn-sm{padding:8px 14px;font-size:13px;border-radius:8px;}
+  .btn-block{width:100%;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  /* ===== Hero ===== */
+  .hero{
+    position:relative;overflow:hidden;
+    background:radial-gradient(1100px 480px at 78% -10%, #1F3D6B 0%, var(--navy-900) 55%, var(--navy-950) 100%);
+    color:#fff;
+  }
+  .hero .wrap{max-width:1240px;margin:0 auto;padding:70px 32px 40px;position:relative;z-index:2;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:7px;background:rgba(232,163,61,.15);
+    border:1px solid rgba(232,163,61,.4);color:var(--amber-500);
+    padding:6px 14px;border-radius:var(--radius-pill);font-size:12.5px;font-weight:600;letter-spacing:.03em;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--amber-500);animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .hero h1{
+    font-family:var(--font-display);font-weight:600;
+    font-size:clamp(34px,4.4vw,54px);line-height:1.06;margin:22px 0 16px;max-width:640px;
+  }
+  .hero h1 em{font-style:normal;color:var(--amber-500);}
+  .hero p.lead{color:#C4CBDA;font-size:17px;line-height:1.6;max-width:480px;margin:0 0 26px;}
+  .trustchips{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:8px;}
+  .trustchip{display:flex;align-items:center;gap:8px;font-size:13.5px;color:#DCE1EC;}
+  .trustchip .ic{color:var(--amber-500);font-family:var(--font-mono);}
+
+  .disclaimer-strip{
+    display:flex;align-items:flex-start;gap:10px;margin-top:22px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
+    border-radius:10px;padding:11px 14px;font-size:12.5px;line-height:1.5;color:#C4CBDA;max-width:560px;
+  }
+  .disclaimer-strip .di{flex:none;color:var(--amber-500);font-size:14px;}
+
+  .searchcard{
+    background:var(--paper-0);border-radius:16px;padding:22px;box-shadow:var(--shadow-2);
+    color:var(--ink-900);width:340px;
+  }
+  .searchcard h3{margin:0 0 4px;font-size:16px;font-family:var(--font-display);font-weight:600;}
+  .searchcard p{margin:0 0 16px;color:var(--ink-600);font-size:12.5px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-600);margin-bottom:6px;}
+  select, input[type=text], input[type=email], input[type=tel]{
+    width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;
+    font-family:inherit;font-size:14px;color:var(--ink-900);background:var(--paper-0);
+  }
+  select:focus, input:focus{outline:2px solid var(--amber-500);outline-offset:1px;border-color:var(--amber-500);}
+  .searchok{display:flex;gap:14px;margin-top:12px;font-size:11.5px;color:var(--ink-600);flex-wrap:wrap;}
+  .searchok span{display:flex;align-items:center;gap:5px;}
+  .searchok .c{color:var(--green-700);}
+
+  .herogrid{display:grid;grid-template-columns:1fr 360px;gap:36px;align-items:start;}
+  @media(max-width:880px){.herogrid{grid-template-columns:1fr;} .searchcard{width:100%;}}
+
+  /* ===== stat strip ===== */
+  .statstrip{max-width:1240px;margin:-34px auto 0;padding:0 32px;position:relative;z-index:5;}
+  .statstrip .inner{
+    background:var(--paper-0);border-radius:16px;box-shadow:var(--shadow-2);
+    display:grid;grid-template-columns:repeat(4,1fr);
+  }
+  .stat{padding:22px 24px;border-right:1px solid var(--line);}
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:var(--font-mono);font-weight:600;font-size:22px;color:var(--navy-900);}
+  .stat .lbl{font-size:12.5px;color:var(--ink-600);margin-top:2px;}
+  @media(max-width:760px){.statstrip .inner{grid-template-columns:repeat(2,1fr);} .stat:nth-child(2){border-right:none;}}
+
+  section.section{max-width:1240px;margin:0 auto;padding:64px 32px;}
+  .sectionhead{margin-bottom:26px;}
+  .sectionhead .kicker{color:var(--amber-600);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;}
+  .sectionhead h2{font-family:var(--font-display);font-size:28px;font-weight:600;margin:6px 0 6px;color:var(--navy-900);}
+  .sectionhead p{color:var(--ink-600);font-size:14.5px;margin:0;}
+
+  /* ===== stamp badge (signature element) ===== */
+  .stamp{
+    position:absolute;top:12px;right:12px;z-index:3;
+    display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+    width:70px;height:70px;border-radius:50%;
+    border:2px dashed currentColor;
+    transform:rotate(9deg);
+    font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:.03em;
+    text-align:center;line-height:1.25;padding:4px;
+  }
+  .stamp.avail{color:var(--green-700);background:rgba(30,142,90,.08);}
+  .stamp.full{color:var(--rust-700);background:rgba(176,68,44,.08);}
+  .stamp .n{font-size:12px;font-weight:700;}
+
+  /* ===== country cards ===== */
+  .cardgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  @media(max-width:980px){.cardgrid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.cardgrid{grid-template-columns:1fr;}}
+  .ccard{
+    background:var(--paper-0);border-radius:var(--radius-card);overflow:hidden;
+    border:1px solid var(--line);box-shadow:var(--shadow-1);transition:.18s;
+  }
+  .ccard:hover{transform:translateY(-3px);box-shadow:var(--shadow-2);}
+  .ccard .photo{
+    position:relative;height:130px;
+    background:linear-gradient(135deg,var(--navy-700),var(--navy-500));
+    display:flex;align-items:flex-end;padding:12px;color:#fff;
+  }
+  .ccard .photo .flag{font-size:22px;margin-right:8px;}
+  .ccard .photo .country{font-family:var(--font-display);font-weight:600;font-size:17px;}
+  .ccard .meta{padding:12px 14px 15px;display:flex;justify-content:space-between;align-items:center;}
+  .ccard .meta .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-400);}
+  .ccard .meta .date{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--navy-900);}
+  .ccard .meta .date.na{color:var(--ink-400);font-weight:500;}
+
+  .bg1{background-image:linear-gradient(180deg, rgba(15,27,51,.05), rgba(15,27,51,.55)), url('https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=400&q=60');background-size:cover;background-position:center;}
+  .bg2{background-image:linear-gradient(180deg, rgba(15,27,51,.05), rgba(15,27,51,.55)), url('https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=400&q=60');background-size:cover;background-position:center;}
+  .bg3{background-image:linear-gradient(180deg, rgba(15,27,51,.05), rgba(15,27,51,.55)), url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&q=60');background-size:cover;background-position:center;}
+  .bg4{background-image:linear-gradient(180deg, rgba(15,27,51,.05), rgba(15,27,51,.55)), url('https://images.unsplash.com/photo-1499856871958-5b9357976b82?auto=format&fit=crop&w=400&q=60');background-size:cover;background-position:center;}
+  .bg5{background-image:linear-gradient(180deg, rgba(15,27,51,.05), rgba(15,27,51,.55)), url('https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=400&q=60');background-size:cover;background-position:center;}
+  .bg6{background-image:linear-gradient(180deg, rgba(15,27,51,.05), rgba(15,27,51,.55)), url('https://images.unsplash.com/photo-1520175480921-4edfa2983e0f?auto=format&fit=crop&w=400&q=60');background-size:cover;background-position:center;}
+  .bg7{background-image:linear-gradient(180deg, rgba(15,27,51,.05), rgba(15,27,51,.55)), url('https://images.unsplash.com/photo-1471874276116-cf843e02fbe2?auto=format&fit=crop&w=400&q=60');background-size:cover;background-position:center;}
+  .bg8{background-image:linear-gradient(180deg, rgba(15,27,51,.05), rgba(15,27,51,.55)), url('https://images.unsplash.com/photo-1543429257-89c6df26af78?auto=format&fit=crop&w=400&q=60');background-size:cover;background-position:center;}
+
+  /* ===== availability page ===== */
+  .avail-hero{
+    position:relative;height:220px;overflow:hidden;
+    background:linear-gradient(90deg, rgba(15,27,51,.92), rgba(15,27,51,.55)), url('https://images.unsplash.com/photo-1529260830199-42c24126f198?auto=format&fit=crop&w=1400&q=60');
+    background-size:cover;background-position:center;
+    display:flex;align-items:center;color:#fff;
+  }
+  .avail-hero .wrap{max-width:1240px;margin:0 auto;padding:0 32px;width:100%;}
+  .breadcrumb{font-size:12.5px;color:#B9C1D1;margin-bottom:10px;}
+  .breadcrumb .cur{color:var(--amber-500);}
+  .avail-hero h1{font-family:var(--font-display);font-size:32px;font-weight:600;margin:0 0 6px;}
+  .avail-hero p{color:#C4CBDA;font-size:14.5px;margin:0;max-width:520px;}
+
+  .a-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:-46px 0 26px;position:relative;z-index:3;}
+  @media(max-width:760px){.a-stats{grid-template-columns:1fr;}}
+  .a-stat{background:var(--paper-0);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow-1);border:1px solid var(--line);display:flex;gap:12px;align-items:center;}
+  .a-stat .ic{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;}
+  .a-stat.blue .ic{background:var(--paper-100);color:var(--navy-700);}
+  .a-stat.green .ic{background:var(--green-100);color:var(--green-700);}
+  .a-stat.amber .ic{background:var(--amber-100);color:var(--amber-600);}
+  .a-stat .num{font-family:var(--font-mono);font-weight:600;font-size:18px;color:var(--navy-900);}
+  .a-stat .lbl{font-size:12px;color:var(--ink-600);}
+
+  .trustline{
+    display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-600);
+    background:var(--paper-0);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:16px;
+  }
+  .trustline b{color:var(--navy-900);}
+  .trustline .di{color:var(--amber-600);flex:none;}
+
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:14px;flex-wrap:wrap;}
+  .searchbox{flex:1;min-width:220px;display:flex;align-items:center;gap:8px;background:var(--paper-0);border:1px solid var(--line);border-radius:9px;padding:9px 13px;}
+  .searchbox input{border:none;outline:none;font-size:13.5px;width:100%;font-family:inherit;}
+  .chip-filter{display:inline-flex;align-items:center;gap:6px;background:var(--navy-900);color:#fff;font-size:12.5px;padding:6px 11px;border-radius:var(--radius-pill);}
+  .chip-filter .x{cursor:pointer;opacity:.7;}
+  .lastchecked{font-size:12px;color:var(--ink-400);}
+  .sortselect{padding:9px 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;font-family:inherit;background:var(--paper-0);color:var(--ink-900);}
+
+  .filterbar{
+    background:var(--paper-0);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;margin-bottom:16px;box-shadow:var(--shadow-1);
+    display:grid;grid-template-columns:repeat(5,1fr);gap:14px;
+  }
+  @media(max-width:980px){.filterbar{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.filterbar{grid-template-columns:1fr;}}
+  .ffield label{display:block;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-600);margin-bottom:6px;}
+  .ffield select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px;color:var(--ink-900);background:var(--paper-0);}
+  .ffield select:focus{outline:2px solid var(--amber-500);outline-offset:1px;border-color:var(--amber-500);}
+
+  table.availtable{width:100%;border-collapse:collapse;background:var(--paper-0);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-1);border:1px solid var(--line);}
+  table.availtable thead th{
+    background:var(--navy-900);color:#EDEFF4;text-align:left;padding:13px 16px;
+    font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:600;
+  }
+  table.availtable tbody td{padding:15px 16px;border-top:1px solid var(--line);font-size:14px;vertical-align:middle;}
+  table.availtable tbody tr:hover{background:var(--paper-50);}
+  .destcell{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy-900);}
+  .destcell .flag{font-size:19px;}
+  .status-pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:var(--radius-pill);}
+  .status-pill.ok{background:var(--green-100);color:var(--green-700);}
+  .status-pill.no{background:var(--rust-100);color:var(--rust-700);}
+  .status-pill .d{width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .servicearea{color:var(--ink-600);font-size:13px;}
+  .dateval{font-family:var(--font-mono);font-weight:600;}
+  .dateval.na{color:var(--ink-400);font-family:var(--font-body);font-weight:400;}
+  .slotscell{display:flex;flex-direction:column;gap:5px;min-width:120px;}
+  .slotscell .n{font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--navy-900);}
+  .slotscell .n.zero{color:var(--ink-400);font-weight:600;}
+  .slotsbar{height:5px;border-radius:3px;background:var(--paper-100);overflow:hidden;width:100px;}
+  .slotsbar i{display:block;height:100%;background:var(--green-700);border-radius:3px;}
+  .actioncell{display:flex;flex-direction:column;align-items:flex-start;gap:5px;}
+  .actioncell .sublink{font-size:12px;font-weight:600;color:var(--navy-700);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0;font-family:inherit;}
+
+  /* ===== overlay/modal ===== */
+  .overlay{
+    display:none;position:fixed;inset:0;background:rgba(15,20,30,.55);
+    z-index:100;align-items:center;justify-content:center;padding:22px;backdrop-filter:blur(2px);
+  }
+  .overlay.active{display:flex;}
+  .modal{background:var(--paper-0);border-radius:16px;max-width:460px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-2);}
+  .modal-head{display:flex;align-items:flex-start;gap:12px;padding:22px 22px 14px;border-bottom:1px solid var(--line);}
+  .modal-head .bell{width:38px;height:38px;border-radius:10px;background:var(--amber-100);color:var(--amber-600);display:flex;align-items:center;justify-content:center;font-size:17px;flex:none;}
+  .modal-head h3{margin:0;font-size:16.5px;font-family:var(--font-display);font-weight:600;}
+  .modal-head .country{font-size:12.5px;color:var(--ink-600);margin-top:2px;}
+  .modal-close{margin-left:auto;background:var(--paper-100);border:none;border-radius:50%;width:26px;height:26px;color:var(--ink-600);font-size:14px;}
+  .modal-body{padding:20px 22px 22px;}
+  .fieldlabel{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-600);margin:0 0 8px;}
+
+  .notifyrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+  .notifybtn{border:1.5px solid var(--line);border-radius:9px;padding:9px 6px;text-align:center;font-size:13px;font-weight:600;color:var(--ink-600);cursor:pointer;}
+  .notifybtn.selected{background:var(--navy-900);border-color:var(--navy-900);color:#fff;}
+
+  .noteinfo{background:var(--paper-50);border:1px solid var(--line);border-radius:9px;padding:11px 13px;font-size:12.5px;color:var(--ink-600);margin:14px 0;}
+  .noteinfo b{color:var(--navy-900);}
+  .warninfo{font-size:12px;color:var(--rust-700);text-align:center;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:5px;}
+  .lockline{font-size:11px;color:var(--ink-400);text-align:center;margin-top:10px;}
+
+  /* ===== subscribe flow / stepper ===== */
+  .flowwrap{max-width:1240px;margin:0 auto;padding:32px 32px 80px;}
+  .stepper{display:flex;align-items:center;gap:8px;margin-bottom:34px;flex-wrap:wrap;background:var(--paper-0);border:1px solid var(--line);border-radius:12px;padding:14px 18px;}
+  .stepitem{display:flex;align-items:center;gap:9px;color:var(--ink-400);font-size:13px;font-weight:600;}
+  .stepitem .circle{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--font-mono);flex:none;}
+  .stepitem.done{color:var(--green-700);}
+  .stepitem.done .circle{background:var(--green-700);border-color:var(--green-700);color:#fff;}
+  .stepitem.cur{color:var(--navy-900);}
+  .stepitem.cur .circle{background:var(--navy-900);border-color:var(--navy-900);color:#fff;}
+  .steparrow{color:var(--ink-400);margin:0 2px;}
+
+  .stepgrid{display:grid;grid-template-columns:1fr 320px;gap:26px;align-items:start;}
+  @media(max-width:920px){.stepgrid{grid-template-columns:1fr;}}
+  .panel{background:var(--paper-0);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-1);}
+  .panel-pad{padding:26px;}
+  .flowh1{font-family:var(--font-display);font-weight:600;font-size:25px;margin:0 0 6px;color:var(--navy-900);}
+  .flowsub{color:var(--ink-600);font-size:14px;margin:0 0 24px;}
+
+  .searchsummary{background:var(--paper-50);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:22px;}
+  .ssgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 24px;}
+  @media(max-width:520px){.ssgrid{grid-template-columns:1fr;}}
+  .ssrow{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line);}
+  .ssrow .l{color:var(--ink-600);}
+  .ssrow .v{font-weight:600;color:var(--navy-900);}
+  .changesearch{display:inline-block;margin-top:10px;font-size:12.5px;font-weight:600;color:var(--navy-700);text-decoration:underline;cursor:pointer;}
+
+  .planpick{border:1.5px solid var(--line);border-radius:12px;padding:18px;margin-bottom:14px;cursor:pointer;transition:.15s;position:relative;}
+  .planpick.rec::after{content:"Most Popular";position:absolute;top:-10px;right:16px;background:var(--amber-500);color:var(--navy-950);font-size:10px;font-weight:700;padding:3px 10px;border-radius:var(--radius-pill);}
+  .planpick.selected{border-color:var(--navy-900);background:var(--paper-50);}
+  .planpick .pt{font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--navy-900);}
+  .planpick .pd{font-size:12.5px;color:var(--ink-600);margin:2px 0 12px;}
+  .durrow{display:flex;gap:8px;flex-wrap:wrap;}
+  .durrow .duropt{min-width:64px;}
+  .duropt{flex:1;border:1px solid var(--line);border-radius:8px;padding:9px 6px;text-align:center;font-size:12.5px;cursor:pointer;}
+  .duropt.selected{background:var(--navy-900);border-color:var(--navy-900);color:#fff;}
+  .duropt .dp{font-family:var(--font-mono);font-weight:700;font-size:14px;display:block;}
+
+  .centersearch{display:flex;gap:10px;margin-bottom:16px;}
+  .centerlist{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .centeropt{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;}
+  .centeropt.selected{border-color:var(--navy-900);background:var(--paper-50);}
+  .centeropt input{margin-top:3px;}
+  .centeropt .cname{font-weight:600;font-size:13.5px;}
+  .centeropt .cloc{font-size:12px;color:var(--ink-600);}
+  .rectag{font-size:9.5px;color:var(--green-700);background:var(--green-100);padding:1px 7px;border-radius:var(--radius-pill);margin-left:6px;font-weight:600;}
+  .selectedchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:var(--navy-900);color:#fff;font-size:12.5px;padding:6px 10px;border-radius:var(--radius-pill);}
+
+  .sidepanel{position:sticky;top:90px;}
+  .sumrow{display:flex;justify-content:space-between;font-size:13.5px;padding:9px 0;border-bottom:1px dashed var(--line);}
+  .sumrow .l{color:var(--ink-600);}
+  .sumrow .v{font-weight:600;color:var(--navy-900);font-family:var(--font-mono);}
+  .sumtotal{display:flex;justify-content:space-between;padding-top:14px;font-size:16px;font-weight:700;color:var(--navy-900);}
+
+  .payfields{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .payfields .full{grid-column:1/-1;}
+  .cardbrands{display:flex;gap:8px;font-size:18px;color:var(--ink-400);}
+  .payrow{display:flex;align-items:center;gap:10px;border:1.5px solid var(--navy-900);background:var(--paper-50);border-radius:10px;padding:11px 14px;margin-bottom:16px;font-weight:600;font-size:13.5px;}
+  .payopt2{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:10px;padding:11px 14px;margin-bottom:10px;font-size:13.5px;color:var(--ink-600);}
+
+  .secure-list{display:flex;flex-direction:column;gap:8px;margin-top:16px;font-size:12px;color:var(--ink-600);}
+  .secure-list span{display:flex;align-items:center;gap:7px;}
+
+  .dash-success{
+    background:linear-gradient(135deg,var(--green-100),var(--paper-0));border:1px solid var(--green-700);
+    border-radius:14px;padding:26px;display:flex;gap:16px;align-items:flex-start;margin-bottom:22px;
+  }
+  .dash-success .ic{width:44px;height:44px;border-radius:50%;background:var(--green-700);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;}
+  .dash-success h3{margin:0 0 4px;font-family:var(--font-display);font-size:19px;color:var(--navy-900);}
+  .dash-success p{margin:0;color:var(--ink-600);font-size:13.5px;}
+
+  .ticket{
+    background:var(--paper-0);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:22px;box-shadow:var(--shadow-1);
+  }
+  .ticket-top{display:grid;grid-template-columns:repeat(4,1fr);}
+  .ticket-cell{padding:16px 18px;border-right:1px dashed var(--line);}
+  .ticket-cell:last-child{border-right:none;}
+  .ticket-cell .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-400);margin-bottom:4px;}
+  .ticket-cell .v{font-weight:600;color:var(--navy-900);font-size:14px;}
+  @media(max-width:760px){.ticket-top{grid-template-columns:repeat(2,1fr);} .ticket-cell{border-bottom:1px dashed var(--line);}}
+
+  .whatsnext{background:var(--paper-0);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:16px;}
+  .whatsnext h4{margin:0 0 12px;font-size:14px;color:var(--navy-900);}
+  .whatsnext li{font-size:13.5px;color:var(--ink-600);margin-bottom:8px;list-style:none;display:flex;gap:8px;}
+  .whatsnext li::before{content:"✓";color:var(--green-700);font-weight:700;}
+
+  .dboard-tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:22px;}
+  .dboard-tabs span{padding:10px 2px;font-size:13.5px;font-weight:600;color:var(--ink-400);border-bottom:2px solid transparent;cursor:default;}
+  .dboard-tabs span.active{color:var(--navy-900);border-color:var(--navy-900);}
+  .dcard{background:var(--paper-0);border:1px solid var(--line);border-radius:12px;padding:18px;}
+
+  .monitorgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:30px;}
+  @media(max-width:920px){.monitorgrid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:600px){.monitorgrid{grid-template-columns:1fr;}}
+  .monitorcard{background:var(--paper-0);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow-1);}
+  .mc-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
+  .mc-top .flag{font-size:22px;}
+  .mc-name{font-weight:600;font-size:15px;color:var(--navy-900);font-family:var(--font-display);}
+  .mc-sub{font-size:12px;color:var(--ink-600);margin-top:1px;}
+  .mc-top .status-pill{margin-left:auto;flex:none;}
+  .mc-meta{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;padding:10px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);}
+  .mc-meta div{display:flex;justify-content:space-between;font-size:12.5px;}
+  .mc-meta .l{color:var(--ink-600);}
+  .mc-meta .v{font-weight:600;color:var(--navy-900);}
+  .mc-actions{display:flex;gap:8px;}
+  .mc-actions .btn{flex:1;}
+
+  .vs-hero{
+    position:relative;height:200px;overflow:hidden;
+    background:linear-gradient(90deg, rgba(15,27,51,.92), rgba(15,27,51,.55)), url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1400&q=60');
+    background-size:cover;background-position:center;
+    display:flex;align-items:center;color:#fff;
+  }
+  .vs-hero .wrap{max-width:1240px;margin:0 auto;padding:0 32px;width:100%;}
+  .vs-hero h1{font-family:var(--font-display);font-size:30px;font-weight:600;margin:0 0 6px;}
+  .vs-hero p{color:#C4CBDA;font-size:14.5px;margin:0;max-width:540px;}
+
+  .vs-destcard{
+    background:var(--paper-0);border:1px solid var(--line);border-radius:14px;padding:20px 22px;
+    display:flex;align-items:center;gap:14px;margin:-38px 0 26px;position:relative;z-index:3;box-shadow:var(--shadow-2);
+  }
+  .vs-destcard .flag{font-size:30px;}
+  .vs-destcard .name{font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--navy-900);}
+  .vs-destcard .sub{font-size:12.5px;color:var(--ink-600);margin-top:2px;}
+
+  .vs-servicegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:26px;}
+  @media(max-width:760px){.vs-servicegrid{grid-template-columns:1fr;}}
+  .vs-service{background:var(--paper-0);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;gap:12px;}
+  .vs-service .ic{width:38px;height:38px;border-radius:9px;background:var(--paper-100);color:var(--navy-700);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;}
+  .vs-service h5{margin:0 0 4px;font-size:14px;color:var(--navy-900);}
+  .vs-service p{margin:0;font-size:12.5px;color:var(--ink-600);line-height:1.5;}
+
+  .vs-contactcard{background:var(--navy-900);color:#fff;border-radius:14px;padding:26px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;}
+  .vs-contactcard h3{font-family:var(--font-display);margin:0 0 6px;font-size:19px;}
+  .vs-contactcard p{margin:0;color:#C4CBDA;font-size:13.5px;max-width:400px;}
+  .vs-contactcard .actions{display:flex;gap:10px;flex-wrap:wrap;}
+  .dcard h5{margin:0 0 12px;font-size:13.5px;color:var(--navy-900);}
+  .alertrow{display:flex;justify-content:space-between;align-items:center;background:var(--green-100);border-radius:10px;padding:12px 14px;}
+  .alertrow .t{font-weight:600;font-size:13.5px;color:var(--navy-900);}
+  .alertrow .s{font-size:11.5px;color:var(--ink-600);}
+  .progressbar{height:6px;background:var(--paper-100);border-radius:3px;overflow:hidden;margin:10px 0;}
+  .progressbar i{display:block;height:100%;background:var(--green-700);width:15%;}
+
+  /* email modal */
+  .emailcard{border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .email-hd{background:var(--navy-900);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
+  .email-hd .l{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14.5px;}
+  .email-body{padding:22px 20px;}
+  .email-body h4{font-family:var(--font-display);font-size:19px;margin:0 0 14px;color:var(--navy-900);}
+  .email-detailrow{display:flex;justify-content:space-between;background:var(--paper-50);border-radius:10px;padding:14px 16px;margin:14px 0;}
+  .email-detailrow .l div:first-child{font-size:12px;color:var(--ink-600);}
+  .email-detailrow .l div:last-child{font-weight:600;color:var(--navy-900);}
+  .email-detailrow .r{text-align:right;}
+
+  footer{background:var(--navy-950);color:#8A93A3;padding:40px 32px;text-align:center;font-size:12.5px;margin-top:40px;}
+  footer b{color:#fff;}
+  footer .fdisclaim{max-width:640px;margin:6px auto 0;color:#B9C1D1;}
+
+  .backlink{display:inline-flex;align-items:center;gap:6px;color:var(--ink-600);font-size:13px;font-weight:600;margin-bottom:16px;cursor:pointer;}
+  .backlink:hover{color:var(--navy-900);}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+  :focus-visible{outline:2px solid var(--amber-500);outline-offset:2px;}
+
+  /* ===== NEW: compact pay screen (image reference) ===== */
+  .pay-hero{background:linear-gradient(90deg,var(--navy-900),var(--navy-700));color:#fff;padding:26px 0;}
+  .pay-hero .wrap{max-width:1000px;margin:0 auto;padding:0 32px;}
+  .pay-hero h1{font-family:var(--font-display);font-size:24px;font-weight:600;margin:0 0 4px;}
+  .pay-hero p{margin:0;color:#C4CBDA;font-size:13.5px;}
+  .paygrid{display:grid;grid-template-columns:1fr 300px;gap:22px;max-width:1000px;margin:26px auto 60px;padding:0 32px;align-items:start;}
+  @media(max-width:820px){.paygrid{grid-template-columns:1fr;}}
+  .pay-alertbox{background:#EEF2FF;border:1px solid #C7D2FE;border-radius:12px;padding:16px 18px;margin:16px 0;}
+  .pay-alertbox .k{color:var(--navy-700);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+  .pay-alertrow{display:flex;justify-content:space-between;font-size:13.5px;padding:6px 0;color:var(--navy-700);}
+  .pay-alertrow .v{font-weight:700;color:var(--navy-900);}
+  .pay-securebox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;margin:16px 0;}
+  .pay-securebox .ic{width:30px;height:30px;border-radius:50%;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;font-size:13px;}
+  .pay-securebox b{font-size:13.5px;color:var(--navy-900);}
+  .pay-securebox p{margin:2px 0 0;font-size:12.5px;color:var(--ink-600);line-height:1.5;}
+  .pay-side{background:var(--paper-0);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow-1);}
+  .pay-side-hd{background:linear-gradient(90deg,var(--navy-900),var(--navy-700));color:#fff;padding:14px 18px;font-weight:600;font-size:13.5px;}
+  .pay-side-body{padding:18px;}
+  .pay-side .kicker{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-400);margin-bottom:8px;}
+  .pay-destrow{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--navy-900);font-size:15px;margin-bottom:2px;}
+  .pay-side .subline{font-size:12.5px;color:var(--ink-600);margin-bottom:14px;}
+  .pay-included{display:flex;flex-direction:column;gap:9px;margin:14px 0;padding-top:14px;border-top:1px solid var(--line);}
+  .pay-included div{display:flex;gap:8px;font-size:12.5px;color:var(--ink-600);align-items:center;}
+  .pay-total{background:var(--navy-900);color:#fff;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:14px;}
+  .pay-total .l{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#B9C1D1;}
+  .pay-total .v{font-size:19px;font-weight:700;}
+  .pay-ssl{text-align:center;font-size:11px;color:var(--ink-400);margin-top:12px;display:flex;align-items:center;justify-content:center;gap:5px;}
+
+  /* modal plan picker (compact) */
+  .modal-plan{border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+  .modal-plan.selected{border-color:var(--navy-900);background:var(--paper-50);}
+  .modal-plan .mp-l{font-size:13.5px;font-weight:600;color:var(--navy-900);}
+  .modal-plan .mp-sub{font-size:11.5px;color:var(--ink-600);font-weight:400;}
+  .modal-plan .mp-price{font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--navy-900);}
+
+  /* ===== redesigned alert modal ===== */
+  .ma-steplabel{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--navy-700);margin:18px 0 10px;display:flex;align-items:center;gap:7px;}
+  .ma-steplabel:first-child{margin-top:0;}
+  .ma-steplabel .n{width:18px;height:18px;border-radius:50%;background:var(--navy-900);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;flex:none;font-weight:700;}
+
+  .ma-scope-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .ma-scope-tab{position:relative;border:1.5px solid var(--line);border-radius:10px;background:var(--paper-0);padding:12px 8px 10px;cursor:pointer;text-align:left;transition:.15s;}
+  .ma-scope-tab:hover{border-color:var(--navy-500);}
+  .ma-scope-tab.selected{border-color:var(--navy-900);background:var(--navy-900);}
+  .ma-scope-tab .badge{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--amber-500);color:var(--navy-950);font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:.02em;white-space:nowrap;text-transform:uppercase;}
+  .ma-scope-tab .t{font-size:12.5px;font-weight:700;color:var(--navy-900);}
+  .ma-scope-tab.selected .t{color:#fff;}
+  .ma-scope-tab .s{font-size:10.5px;color:var(--ink-600);margin-top:1px;}
+  .ma-scope-tab.selected .s{color:#B9C1D1;}
+  .ma-scope-tab .f{font-size:10.5px;color:var(--amber-600);font-weight:700;margin-top:6px;}
+  .ma-scope-tab.selected .f{color:var(--amber-500);}
+
+  .ma-duration-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+  .ma-duration-card{border:1.5px solid var(--line);border-radius:10px;background:var(--paper-0);padding:11px 6px;text-align:center;cursor:pointer;transition:.15s;}
+  .ma-duration-card:hover{border-color:var(--navy-500);}
+  .ma-duration-card.selected{border-color:var(--amber-600);background:var(--amber-100);}
+  .ma-duration-card .p{font-family:var(--font-mono);font-weight:700;font-size:15px;color:var(--navy-900);}
+  .ma-duration-card.selected .p{color:var(--amber-600);}
+  .ma-duration-card .l{font-size:10px;color:var(--ink-600);margin-top:2px;font-weight:600;}
+
+  .ma-channel-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .ma-channel{border:1.5px solid var(--line);border-radius:9px;padding:9px 6px;text-align:center;font-size:12.5px;font-weight:600;color:var(--navy-700);cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .ma-channel:hover{border-color:var(--navy-500);}
+  .ma-channel.selected{background:var(--navy-900);border-color:var(--navy-900);color:#fff;}
+
+  .ma-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  .ma-summary{display:flex;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-top:18px;box-shadow:var(--shadow-1);}
+  .ma-summary-main{flex:1;background:var(--navy-900);color:#fff;padding:13px 15px;display:flex;flex-direction:column;gap:4px;}
+  .ma-summary-main .l{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#96A4C4;font-weight:700;}
+  .ma-summary-main .v{font-family:var(--font-display);font-size:14px;font-weight:600;}
+  .ma-summary-stub{width:96px;flex:none;background:var(--amber-500);color:var(--navy-950);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;padding:8px;}
+  .ma-summary-stub::before{content:'';position:absolute;left:-6px;top:0;bottom:0;width:12px;background-image:radial-gradient(circle at 6px 0, transparent 6px, var(--navy-900) 6px);background-size:12px 18px;background-repeat:repeat-y;}
+  .ma-summary-stub .amt{font-family:var(--font-mono);font-weight:700;font-size:19px;line-height:1;}
+  .ma-summary-stub .amtl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-top:3px;opacity:.7;}
+
+  .ma-center-checks{border:1px solid var(--line);border-radius:9px;padding:9px 11px;max-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;background:var(--paper-0);}
+  .ma-center-check{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-900);cursor:pointer;}
+  .ma-center-check input{margin:0;accent-color:var(--navy-900);}
+  .ma-center-check.disabled{opacity:.4;cursor:not-allowed;}
+  .ma-center-hint{font-size:10.5px;color:var(--ink-600);margin-top:6px;}
+  .ma-center-all{border:1px dashed var(--line);border-radius:9px;padding:11px 12px;font-size:12.5px;color:var(--navy-700);background:var(--paper-50);display:flex;align-items:center;gap:8px;font-weight:600;}
+
+  .filterbtn{position:relative;}
+  .filterbtn.active{background:var(--navy-900);border-color:var(--navy-900);color:#fff;}
+  .filterbtn svg{flex:none;}
+  .filter-badge{background:var(--amber-500);color:var(--navy-950);font-size:10px;font-weight:800;border-radius:999px;padding:1px 6px;line-height:1.4;}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV (shared) ============ -->
+<div class="topbar"><div class="wrap">
+  <div><span>📍 447 Broadway, NY 10013, United States</span><span>📞 +1 (516) 835-7843</span><span>✉ help@schengenvisaitineraryslot.com</span></div>
+  <div>EN · USD</div>
+</div></div>
+
+<nav class="mainnav"><div class="wrap">
+  <div class="brand"><span class="mark">SVS</span> SchengenVisaItinerarySlot</div>
+  <div class="navlinks">
+    <a class="current" onclick="showView('landing')">Home</a>
+    <a onclick="showView('availability')">Availability</a>
+    <a href="#">Blog</a>
+    <a href="#">About Us</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="navcta">
+    <button class="btn btn-ghost btn-sm">Sign in</button>
+    <div class="avatar">PT</div>
+  </div>
+</div></nav>
+
+<!-- ============================================================ -->
+<!-- VIEW 1 — LANDING -->
+<!-- ============================================================ -->
+<div class="view active" id="view-landing">
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="herogrid">
+        <div>
+          <span class="eyebrow"><span class="dot"></span> Live data · updated every few minutes</span>
+          <h1>Find live visa<br><em>appointment slots</em>, the moment they open.</h1>
+          <p class="lead">We watch official Schengen visa centers around the clock across 200+ countries and email you the instant a new slot opens, so you can stop refreshing and start planning.</p>
+          <div class="trustchips">
+            <div class="trustchip"><span class="ic">◆</span> Real-time availability</div>
+            <div class="trustchip"><span class="ic">◆</span> 200+ countries</div>
+            <div class="trustchip"><span class="ic">◆</span> Multiple visa centers</div>
+            <div class="trustchip"><span class="ic">◆</span> Secure &amp; reliable</div>
+            <div class="trustchip"><span class="ic">◆</span> Instant alerts</div>
+          </div>
+          <div class="disclaimer-strip">
+            <span class="di">ⓘ</span>
+            <span>SchengenVisaItinerarySlot is an independent monitoring &amp; alert service — <b style="color:#fff">not affiliated with any embassy, consulate, or government agency</b>. We notify you the instant a slot opens, and <b style="color:#fff">we can book it for you</b> — just contact us at ✉ help@schengenvisaitineraryslot.com or 📞 +1 (516) 835-7843. Full refund if we find zero slots during your monitoring period.</span>
+          </div>
+        </div>
+
+        <div class="searchcard">
+          <h3>Let's find your appointment</h3>
+          <p>Enter your travel details to check live availability.</p>
+          <div class="field">
+            <label>Applying From</label>
+            <select><option>🇺🇸 United States</option><option>🇬🇧 United Kingdom</option><option>🇮🇳 India</option></select>
+          </div>
+          <div class="field">
+            <label>Traveling To</label>
+            <select id="travelto"><option>🇩🇪 Germany</option><option>🇫🇷 France</option><option>🇬🇷 Greece</option></select>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="showView('availability')">🔍 Find Available Appointments</button>
+          <div class="searchok">
+            <span class="c">✓ No waiting lists</span><span class="c">✓ Real-time updates</span><span class="c">✓ Instant confirmation</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="statstrip"><div class="inner">
+    <div class="stat"><div class="num">200+</div><div class="lbl">Countries covered</div></div>
+    <div class="stat"><div class="num">Multiple</div><div class="lbl">Visa centers monitored</div></div>
+    <div class="stat"><div class="num">Millions</div><div class="lbl">Appointments monitored</div></div>
+    <div class="stat"><div class="num">500K+</div><div class="lbl">Happy travelers</div></div>
+  </div></div>
+
+  <section class="section">
+    <div class="sectionhead">
+      <div class="kicker">Recommended for you</div>
+      <h2>Best Schengen slots for United States citizens</h2>
+      <p>Top-recommended countries based on your location &amp; current availability.</p>
+    </div>
+    <div class="cardgrid">
+      <div class="ccard" onclick="showView('availability')" style="cursor:pointer">
+        <div class="photo bg1" style="position:relative">
+          <div class="stamp avail"><span class="n">2727</span>SLOTS</div>
+          <span class="flag">🇩🇪</span><span class="country">Germany</span>
+        </div>
+        <div class="meta"><span class="label">Earliest</span><span class="date">20 Jul 2026</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="sectionhead">
+      <div class="kicker">Full directory</div>
+      <h2>Browse all Schengen countries</h2>
+      <p>Top-recommended embassies based on your location &amp; current availability.</p>
+    </div>
+    <div class="cardgrid" id="countrygrid"></div>
+  </section>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- VIEW 2 — AVAILABILITY -->
+<!-- ============================================================ -->
+<div class="view" id="view-availability">
+  <div class="avail-hero"><div class="wrap">
+    <div class="breadcrumb">Home &nbsp;›&nbsp; <span class="cur">Visa Appointment Availability</span></div>
+    <h1>Visa Appointment Availability</h1>
+    <p>Live appointment slots at official centers across Schengen.</p>
+  </div></div>
+
+  <div class="flowwrap" style="padding-top:0">
+    <div class="a-stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="a-stat blue"><div class="ic">🗓</div><div><div class="num">1/26</div><div class="lbl">Countries with open slots</div></div></div>
+      <div class="a-stat amber"><div class="ic">🎟</div><div><div class="num" id="stat-total-slots">—</div><div class="lbl">Total slots open · <span id="stat-month-label"></span></div></div></div>
+      <div class="a-stat blue"><div class="ic">🌍</div><div><div class="num">Germany</div><div class="lbl">Most available country</div></div></div>
+    </div>
+
+    <div class="sectionhead" style="margin-bottom:14px">
+      <h2 style="font-size:22px">Schengen Visa Appointment Availability From United States</h2>
+    </div>
+
+    <div class="toolbar">
+      <div class="searchbox">🔎 <input type="text" id="tablesearch" placeholder="Search country..." oninput="renderAvailTable()"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm filterbtn" id="filterToggleBtn" onclick="toggleFilterbar()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+          Filters
+          <span class="filter-badge" id="filterBadge" style="display:none">0</span>
+        </button>
+        <span class="lastchecked" id="lastchecked">Last checked: just now</span>
+        <button class="btn btn-ghost btn-sm" onclick="refreshCheckedTime()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <div class="filterbar" id="filterbar" style="display:none">
+      <div class="ffield">
+        <label>Current Residence</label>
+        <select id="filter-residence" onchange="renderAvailTable()">
+          <option>🇺🇸 United States</option>
+          <option>🇬🇧 United Kingdom</option>
+          <option>🇮🇳 India</option>
+        </select>
+      </div>
+      <div class="ffield">
+        <label>Destination</label>
+        <select id="filter-destination" onchange="renderAvailTable()">
+          <option value="all">All Schengen Countries</option>
+        </select>
+      </div>
+      <div class="ffield">
+        <label>VAC / Embassy Location</label>
+        <select id="filter-location" onchange="renderAvailTable()">
+          <option value="all">All Locations</option>
+        </select>
+      </div>
+      <div class="ffield">
+        <label>Appointment Availability</label>
+        <select id="filter-availability" onchange="renderAvailTable()">
+          <option value="all">All</option>
+          <option value="available">Available only</option>
+          <option value="notavailable">Not available</option>
+        </select>
+      </div>
+      <div class="ffield">
+        <label>Appointment Month</label>
+        <select id="filter-month" onchange="renderAvailTable()">
+          <option value="all">All Months</option>
+          <option value="Jul 2026">July 2026</option>
+          <option value="Aug 2026">August 2026</option>
+        </select>
+      </div>
+    </div>
+
+    <table class="availtable">
+      <thead><tr><th>Destination</th><th>Slots Available</th><th>Status</th><th>Service Area</th><th>Action</th></tr></thead>
+      <tbody id="availtbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- VIEW 3 — PAYMENT (compact, single screen, matches reference image) -->
+<!-- ============================================================ -->
+<div class="view" id="view-payment">
+  <div class="pay-hero"><div class="wrap">
+    <h1>Complete Your Alert Subscription</h1>
+    <p>One quick payment and we'll start monitoring instantly</p>
+  </div></div>
+
+  <div class="paygrid">
+    <div class="panel panel-pad">
+      <div class="backlink" onclick="showView('availability')" style="margin-bottom:14px">← Back</div>
+      <h3 style="margin:0 0 4px;font-size:17px;color:var(--navy-900);">Payment for Slot Alert</h3>
+      <p style="margin:0;font-size:13px;color:var(--ink-600)">You'll be redirected to our secure payment partner to complete the purchase.</p>
+
+      <div class="pay-alertbox">
+        <div class="k">Alert Summary</div>
+        <div class="pay-alertrow"><span>Monitoring</span><span class="v" id="pay-monitoring">—</span></div>
+        <div class="pay-alertrow"><span>Plan</span><span class="v" id="pay-plan">—</span></div>
+        <div class="pay-alertrow"><span>Notify Via</span><span class="v" id="pay-notifyvia">Email</span></div>
+        <div class="pay-alertrow"><span>Contact</span><span class="v" id="pay-contact">—</span></div>
+      </div>
+
+      <div class="pay-securebox">
+        <div class="ic">🛡</div>
+        <div>
+          <b>Secure payment</b>
+          <p>Choose Stripe, PayPal, or Authorize.Net on the next page — your card details never touch our servers.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:18px;">
+        <button class="btn btn-ghost" onclick="showView('availability')">‹ Back</button>
+        <button class="btn btn-primary btn-block" onclick="completeSubscription()">🔒 Proceed to Secure Payment — <span id="pay-amount">$0.00</span></button>
+      </div>
+      <div class="lockline">Full refund if we find zero slots during your monitoring period.</div>
+    </div>
+
+    <div class="pay-side">
+      <div class="pay-side-hd">Alert Subscription</div>
+      <div class="pay-side-body">
+        <div class="kicker">Monitoring</div>
+        <div class="pay-destrow"><span id="pay-side-flag">🌍</span><span id="pay-side-name">Destination</span></div>
+        <div class="subline" id="pay-side-center">Visa center</div>
+        <div class="pay-included">
+          <div>🔔 Instant slot notifications</div>
+          <div>✉ Email &amp; SMS alerts</div>
+          <div>🕐 24/7 continuous monitoring</div>
+          <div>📍 Multi-centre tracking</div>
+        </div>
+        <div class="pay-total"><span class="l">Total Due</span><span class="v" id="pay-side-total">$0.00</span></div>
+        <div class="pay-ssl">🔒 256-bit SSL encrypted checkout</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- VIEW 4 — DASHBOARD (success + monitored slots) -->
+<!-- ============================================================ -->
+<div class="view" id="view-dashboard">
+  <div class="flowwrap">
+    <div class="dash-success">
+      <div class="ic">✓</div>
+      <div>
+        <h3 id="dash-success-title">Subscription activated!</h3>
+        <p id="dash-success-text">We'll start monitoring immediately and notify you as soon as an appointment is available.</p>
+      </div>
+    </div>
+
+    <div class="ticket" id="booking-ticket" style="display:none">
+      <div class="ticket-top">
+        <div class="ticket-cell"><div class="l">Destination</div><div class="v" id="dash-dest">—</div></div>
+        <div class="ticket-cell"><div class="l">Monitoring status</div><div class="v" style="color:var(--green-700)">Active ✓</div></div>
+        <div class="ticket-cell"><div class="l">Application center</div><div class="v" id="dash-appcenter">—</div></div>
+        <div class="ticket-cell"><div class="l">Alert status</div><div class="v" style="color:var(--green-700)">Emailed ✓</div></div>
+      </div>
+    </div>
+
+    <div class="ticket">
+      <div class="ticket-top">
+        <div class="ticket-cell"><div class="l">Plan</div><div class="v" id="dash-plan">—</div></div>
+        <div class="ticket-cell"><div class="l">Visa center(s)</div><div class="v" id="dash-centers">—</div></div>
+        <div class="ticket-cell"><div class="l">Duration</div><div class="v" id="dash-dur">—</div></div>
+        <div class="ticket-cell"><div class="l">Expires on</div><div class="v" id="dash-expiry">—</div></div>
+      </div>
+    </div>
+
+    <div class="stepgrid" style="grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+      <div class="whatsnext" style="margin:0">
+        <h4>What's next?</h4>
+        <ul>
+          <li>We monitor 24/7 for new appointments</li>
+          <li>You'll receive an email instantly when a slot opens</li>
+          <li>Contact us and we'll book it for you — 📞 +1 (516) 835-7843 · ✉ help@schengenvisaitineraryslot.com</li>
+        </ul>
+      </div>
+      <div class="whatsnext" style="margin:0">
+        <h4>Subscription details</h4>
+        <div class="sumrow"><span class="l">Subscription ID</span><span class="v" id="dash-subid">SUB-2026-0718-001</span></div>
+        <div class="sumrow"><span class="l">Start date</span><span class="v">20 Jul 2026</span></div>
+        <div class="sumrow"><span class="l">Status</span><span class="v" style="color:var(--green-700)">Active</span></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-bottom:8px;flex-wrap:wrap;">
+      <a class="btn btn-primary" href="mailto:help@schengenvisaitineraryslot.com">✉ Email us about your slot</a>
+      <a class="btn btn-ghost" href="tel:+15168357843">📞 Call +1 (516) 835-7843</a>
+      <button class="btn btn-ghost" onclick="showView('landing')">Go to home</button>
+    </div>
+    <div class="lockline" style="text-align:left;margin:0 0 26px;line-height:1.5;">Note: this subscription covers appointment availability alerts only — it isn't a booking. Email us the specific slot you'd like to proceed with and we'll help from there.</div>
+
+    <div class="sectionhead" style="margin-bottom:14px"><h2 style="font-size:19px">My dashboard</h2></div>
+    <div class="dboard-tabs"><span class="active">Overview</span><span>Alert history</span><span>Subscription</span><span>Settings</span></div>
+
+    <div class="sectionhead" style="margin-bottom:14px">
+      <h2 style="font-size:16px">My Monitored Slots</h2>
+      <p style="font-size:13px">Everything you're currently tracking. Open a card for full details, or start the booking process for any destination.</p>
+    </div>
+    <div class="monitorgrid" id="monitorgrid"></div>
+
+    <div class="stepgrid" style="grid-template-columns:1.4fr 1fr;gap:16px;">
+      <div class="dcard">
+        <h5>Need to book?</h5>
+        <div style="font-size:13px;color:var(--ink-600);line-height:1.6;">Once we spot a matching slot, contact us any time and we'll take care of the booking for you — or email us letting us know which slot you'd like to proceed with.<br><br>📞 +1 (516) 835-7843 &nbsp;·&nbsp; ✉ help@schengenvisaitineraryslot.com<br><br><span style="font-size:11.5px;color:var(--ink-400)">This subscription is for availability alerts only, not a booking confirmation.</span></div>
+      </div>
+      <div class="dcard">
+        <h5>Subscription</h5>
+        <div style="font-size:13px;color:var(--ink-600)">Expires on <b id="dash-expiry2" style="color:var(--navy-900)">—</b></div>
+        <div class="progressbar"><i></i></div>
+        <div style="font-size:12px;color:var(--ink-400)">1 day used</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- VIEW 5 — APPLY FOR VISA (destination reached via "Book Now" on a dashboard card) -->
+<!-- ============================================================ -->
+<div class="view" id="view-visaservices">
+  <div style="max-width:640px;margin:0 auto;padding:60px 32px;">
+    <div class="backlink" onclick="backToDashboard()">← Back to dashboard</div>
+
+    <h1 style="font-family:var(--font-body);font-size:22px;font-weight:700;color:var(--navy-900);margin:20px 0 18px;">Apply for Visa</h1>
+
+    <p style="font-size:14.5px;color:var(--ink-900);line-height:1.8;margin:0 0 14px;">
+      Destination: <span id="vs-destname">—</span><br>
+      Visa center: <span id="vs-destsub">—</span><br>
+      Status: <span id="vs-statuspill">—</span>
+    </p>
+
+    <p style="font-size:14.5px;color:var(--ink-900);line-height:1.8;margin:0 0 14px;">
+      This subscription covers appointment availability alerts only — it is not a booking. To apply for this visa, email us the applicant details and preferred appointment for <span id="vs-contactdest">this destination</span>, and we will take care of the booking for you.
+    </p>
+
+    <p style="font-size:14.5px;color:var(--ink-900);line-height:1.8;margin:0;">
+      Email: <a id="vs-mailto" href="mailto:help@schengenvisaitineraryslot.com" style="color:var(--navy-700);text-decoration:underline;">help@schengenvisaitineraryslot.com</a><br>
+      Phone: <a href="tel:+15168357843" style="color:var(--navy-700);text-decoration:underline;">+1 (516) 835-7843</a>
+    </p>
+  </div>
+</div>
+
+<footer>
+  <b>SchengenVisaItinerarySlot</b> monitors official Schengen visa appointment systems on your behalf and alerts you the moment a slot opens.
+  <div class="fdisclaim">SchengenVisaItinerarySlot is an independent monitoring service and is <b style="color:#fff">not affiliated with, endorsed by, or connected to</b> any embassy, consulate, visa application center, or government agency. We monitor availability and can book your appointment for you once we confirm a slot — contact us at help@schengenvisaitineraryslot.com or +1 (516) 835-7843. See our Terms, Refund Policy, and Privacy Policy for details.</div>
+  <br>© 2026 SchengenVisaItinerarySlot. All rights reserved.
+</footer>
+
+<!-- ============================================================ -->
+<!-- MODAL — Subscribe / Notify Me (ONE modal: details + plan, then straight to payment) -->
+<!-- ============================================================ -->
+<div class="overlay" id="modal-alert">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="bell">🔔</div>
+      <div>
+        <h3 id="alert-title">Notify me when a slot opens</h3>
+        <div class="country" id="alert-country">🇫🇷 France</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-alert')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="noteinfo" style="margin-top:0" id="alert-noteinfo">
+        <b>ⓘ This starts monitoring.</b> We'll watch <span id="alert-country2">France</span> and email you the instant a slot opens — then contact us and we'll book it for you.
+      </div>
+
+      <div class="ma-steplabel"><span class="n">1</span>Choose your coverage</div>
+      <div class="ma-scope-tabs" id="ma-scope-tabs">
+        <div class="ma-scope-tab selected" data-scope="single" onclick="pickScope(this)">
+          <div class="t">1 Center</div>
+          <div class="s">Single application center</div>
+          <div class="f">From $5</div>
+        </div>
+        <div class="ma-scope-tab" data-scope="multi" onclick="pickScope(this)">
+          <div class="t">Up to 5 Centers (Popular)</div>
+          <div class="s">Up to 5 application centers</div>
+          <div class="f">From $8</div>
+        </div>
+        <div class="ma-scope-tab" data-scope="all" onclick="pickScope(this)">
+          <div class="t">All Schengen Centers</div>
+          <div class="s">All Schengen application centers</div>
+          <div class="f">From $12</div>
+        </div>
+      </div>
+
+      <div class="ma-steplabel"><span class="n">2</span>Choose monitoring duration</div>
+      <div class="ma-duration-grid" id="ma-duration-grid"></div>
+
+      <div class="ma-steplabel"><span class="n">3</span>Notify me via</div>
+      <div class="ma-channel-row" id="ma-channel-row">
+        <div class="ma-channel selected" data-channel="email" onclick="pickChannel(this)">✉ Email</div>
+        <div class="ma-channel" data-channel="sms" onclick="pickChannel(this)">💬 SMS</div>
+        <div class="ma-channel" data-channel="both" onclick="pickChannel(this)">📶 Both</div>
+      </div>
+
+      <div class="ma-steplabel"><span class="n">4</span>Your details</div>
+      <div class="field"><label>Applicant name</label><input type="text" placeholder="John Doe"></div>
+      <div class="field"><label>Email address</label><input type="email" id="alert-email" placeholder="your@email.com" oninput="checkAlertForm()"></div>
+
+      <div class="ma-field-grid">
+        <div class="field">
+          <label id="ma-center-label">Visa application centre</label>
+          <div id="ma-center-wrap"></div>
+        </div>
+        <div class="field">
+          <label>Visa purpose</label>
+          <input type="text" id="alert-purpose" value="Tourist Visa">
+        </div>
+      </div>
+
+      <div class="ma-summary">
+        <div class="ma-summary-main">
+          <div class="l">Selected plan</div>
+          <div class="v" id="ma-summary-scope">Up to 5 · 7 Days</div>
+          <div class="l" style="margin-top:3px">Notify via <span id="ma-summary-channel" style="color:#fff;text-transform:none;font-weight:600;">Email</span></div>
+        </div>
+        <div class="ma-summary-stub">
+          <div class="amt" id="ma-summary-price">$10</div>
+          <div class="amtl">Total</div>
+        </div>
+      </div>
+
+      <button class="btn btn-amber btn-block" id="activate-btn" disabled onclick="activateAlert()" style="margin-top:16px">Continue to Payment →</button>
+      <div class="warninfo" id="alert-warn">⚠ Enter your email address to continue</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL — sample email -->
+<!-- ============================================================ -->
+<div class="overlay" id="modal-email">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head" style="border-bottom:none;padding-bottom:0">
+      <h3 style="font-size:14px;color:var(--ink-600);font-family:var(--font-body);font-weight:600">Email alert example</h3>
+      <button class="modal-close" onclick="closeModal('modal-email')">✕</button>
+    </div>
+    <div class="modal-body" style="padding-top:10px">
+      <div class="emailcard">
+        <div class="email-hd">
+          <div class="l">🅱 SchengenVisaItinerarySlot Visa Alert</div>
+          <div style="font-size:11px;color:#B9C1D1" id="email-sent-time">20 Jul 2026 · 10:30 AM</div>
+        </div>
+        <div class="email-body">
+          <h4 id="email-title">Appointment available!</h4>
+          <p style="font-size:13.5px;color:var(--ink-600)" id="email-intro">Hello John,<br>Great news — a new appointment is available at your selected visa center. Book it now before it's gone.</p>
+          <div class="email-detailrow">
+            <div class="l"><div id="email-dest-label">🇺🇸 Visa center</div><div id="email-center">Boston VAC, Boston, MA, USA</div></div>
+            <div class="r"><div>Available date</div><div id="email-date">28 Jul 2026 · 09:30 AM</div></div>
+          </div>
+          <button class="btn btn-primary btn-block" id="email-cta">Contact us to book this slot →</button>
+          <p style="font-size:12px;color:var(--ink-400);text-align:center;margin-top:14px">Hurry — slots are limited and get booked quickly. Reply to this email or call us and we'll book it for you.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL — monitored slot details -->
+<!-- ============================================================ -->
+<div class="overlay" id="modal-monitor">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="bell" id="mm-flag" style="font-size:20px">🌍</div>
+      <div>
+        <h3 id="mm-name">Destination</h3>
+        <div class="country" id="mm-center">Visa center</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-monitor')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="sumrow"><span class="l">Status</span><span class="v" id="mm-status">—</span></div>
+      <div class="sumrow"><span class="l">Plan</span><span class="v" id="mm-plan">—</span></div>
+      <div class="sumrow"><span class="l">Monitoring duration</span><span class="v" id="mm-duration">—</span></div>
+      <div class="sumrow"><span class="l">Price paid</span><span class="v" id="mm-price">—</span></div>
+      <div class="sumrow"><span class="l">Subscription ID</span><span class="v" id="mm-id">—</span></div>
+      <div class="sumrow"><span class="l">Started</span><span class="v" id="mm-started">—</span></div>
+      <div class="noteinfo">This subscription covers availability alerts only. Ready to proceed? Contact us and we'll take care of the booking for you.</div>
+      <button class="btn btn-primary btn-block" id="mm-booknow" onclick="">Book Now →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- data ---------------- */
+const countries = [
+  {flag:"🇩🇪",name:"Germany",bg:"bg1",date:"20 Jul 2026",avail:true,slots:2727,centers:"6 consulates · 115 regions"},
+  {flag:"🇦🇹",name:"Austria",bg:"bg2",date:null,avail:false,slots:0,centers:"3 consulates · 40 regions"},
+  {flag:"🇧🇪",name:"Belgium",bg:"bg3",date:null,avail:false,slots:0,centers:"2 consulates · 20 regions"},
+  {flag:"🇨🇿",name:"Czech Republic",bg:"bg4",date:null,avail:false,slots:0,centers:"3 consulates · 35 regions"},
+  {flag:"🇩🇰",name:"Denmark",bg:"bg5",date:null,avail:false,slots:0,centers:"2 consulates · 15 regions"},
+  {flag:"🇪🇪",name:"Estonia",bg:"bg6",date:null,avail:false,slots:0,centers:"1 consulate · 8 regions"},
+  {flag:"🇫🇮",name:"Finland",bg:"bg7",date:null,avail:false,slots:0,centers:"2 consulates · 12 regions"},
+  {flag:"🇫🇷",name:"France",bg:"bg8",date:null,avail:false,slots:0,centers:"5 consulates · 90 regions"},
+];
+const currentMonthLabel = "Jul 2026";
+
+function renderCountryGrid(){
+  const grid = document.getElementById('countrygrid');
+  grid.innerHTML = countries.map(c => `
+    <div class="ccard" onclick="showView('availability')" style="cursor:pointer">
+      <div class="photo ${c.bg}" style="position:relative">
+        <div class="stamp ${c.avail?'avail':'full'}">${c.avail?`<span class="n">${c.slots}</span>SLOTS`:'FULL'}</div>
+        <span class="flag">${c.flag}</span><span class="country">${c.name}</span>
+      </div>
+      <div class="meta"><span class="label">Available</span><span class="date ${c.avail?'':'na'}">${c.avail?c.slots.toLocaleString()+' slots':'Not available'}</span></div>
+    </div>`).join('');
+}
+
+/* Populate the Destination filter once from the country list */
+function populateDestinationFilter(){
+  const sel = document.getElementById('filter-destination');
+  if(!sel || sel.dataset.filled) return;
+  countries.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.name;
+    opt.textContent = `${c.flag} ${c.name}`;
+    sel.appendChild(opt);
+  });
+  sel.dataset.filled = '1';
+}
+
+function renderAvailTable(){
+  populateDestinationFilter();
+  const tbody = document.getElementById('availtbody');
+  const maxSlots = Math.max(...countries.map(c=>c.slots), 1);
+  const query = (document.getElementById('tablesearch')?.value || '').trim().toLowerCase();
+  const sortMode = document.getElementById('sortselect')?.value || 'default';
+  const destFilter = document.getElementById('filter-destination')?.value || 'all';
+  const availFilter = document.getElementById('filter-availability')?.value || 'all';
+  const monthFilter = document.getElementById('filter-month')?.value || 'all';
+
+  let list = countries.filter(c => c.name.toLowerCase().includes(query));
+
+  if(destFilter !== 'all') list = list.filter(c => c.name === destFilter);
+  if(availFilter === 'available') list = list.filter(c => c.avail);
+  if(availFilter === 'notavailable') list = list.filter(c => !c.avail);
+  if(monthFilter !== 'all') list = list.filter(c => !c.avail || (c.date && c.date.includes(monthFilter.split(' ')[0]) && c.date.includes(monthFilter.split(' ')[1])));
+
+  if(sortMode === 'slots'){
+    list = list.slice().sort((a,b)=> b.slots - a.slots);
+  } else if(sortMode === 'name'){
+    list = list.slice().sort((a,b)=> a.name.localeCompare(b.name));
+  }
+
+  tbody.innerHTML = list.length ? list.map(c => `
+    <tr>
+      <td><div class="destcell"><span class="flag">${c.flag}</span>${c.name}</div></td>
+      <td><div class="slotscell">
+            <span class="n ${c.slots?'':'zero'}">${c.slots ? c.slots.toLocaleString()+' slots' : '0 slots'}</span>
+            <div class="slotsbar"><i style="width:${Math.max(c.slots/maxSlots*100,c.slots?4:0)}%"></i></div>
+          </div></td>
+      <td>${c.avail
+        ? `<span class="status-pill ok"><span class="d"></span>Available</span>`
+        : `<span class="status-pill no"><span class="d"></span>Not available</span>`}</td>
+      <td><span class="servicearea">📍 ${c.centers}</span></td>
+      <td>${c.avail
+        ? `<button class="btn btn-primary btn-sm" onclick="openAlert('${c.flag}','${c.name}',true)">🔔 Subscribe</button>`
+        : `<button class="btn btn-amber btn-sm" onclick="openAlert('${c.flag}','${c.name}',false)">🔔 Notify Me</button>`}</td>
+    </tr>`).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--ink-400);padding:28px;">No countries match your filters</td></tr>`;
+
+  const total = list.reduce((sum,c)=>sum + (c.slots||0), 0);
+  document.getElementById('stat-total-slots').textContent = total.toLocaleString();
+  document.getElementById('stat-month-label').textContent = currentMonthLabel;
+
+  updateFilterBadge();
+}
+
+function refreshCheckedTime(){
+  document.getElementById('lastchecked').textContent = 'Last checked: just now';
+}
+
+/* ---------------- filter panel toggle ---------------- */
+function toggleFilterbar(){
+  const panel = document.getElementById('filterbar');
+  const btn = document.getElementById('filterToggleBtn');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'grid';
+  btn.classList.toggle('active', !isOpen);
+}
+
+function updateFilterBadge(){
+  const destFilter = document.getElementById('filter-destination')?.value || 'all';
+  const locFilter = document.getElementById('filter-location')?.value || 'all';
+  const availFilter = document.getElementById('filter-availability')?.value || 'all';
+  const monthFilter = document.getElementById('filter-month')?.value || 'all';
+  let count = 0;
+  if(destFilter !== 'all') count++;
+  if(locFilter !== 'all') count++;
+  if(availFilter !== 'all') count++;
+  if(monthFilter !== 'all') count++;
+  const badge = document.getElementById('filterBadge');
+  if(!badge) return;
+  if(count > 0){ badge.style.display = 'inline-block'; badge.textContent = count; }
+  else { badge.style.display = 'none'; }
+}
+
+/* ---------------- view switching ---------------- */
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.navlinks a').forEach(a=>a.classList.remove('current'));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------------- ONE modal for both "Subscribe" (available) and "Notify Me" (not available) ---------------- */
+let pendingAlertCountry = null;   // {flag,name,available}
+
+/* coverage scope -> duration -> price matrix */
+const maPlans = {
+  single: { name:'1 Center', durations:[
+    {len:'24 Hours', price:5}, {len:'7 Days', price:10}, {len:'30 Days', price:20}, {len:'90 Days', price:45}
+  ]},
+  multi: { name:'Up to 5 Centers', durations:[
+    {len:'24 Hours', price:8}, {len:'7 Days', price:15}, {len:'30 Days', price:30}, {len:'90 Days', price:65}
+  ]},
+  all: { name:'All Schengen', durations:[
+    {len:'24 Hours', price:12}, {len:'7 Days', price:25}, {len:'30 Days', price:45}, {len:'90 Days', price:95}
+  ]}
+};
+/* notify-channel pricing: Email is the basic option; each step up costs $5 more than basic */
+const maChannelFees = { email:0, sms:5, both:10 };
+const maChannelNames = { email:'Email', sms:'SMS', both:'Email + SMS' };
+const vacCenters = ['Boston VAC','San Francisco VAC','New York VAC','Los Angeles VAC','Chicago VAC'];
+const MA_MULTI_CAP = 5;
+let maState = { scope:'single', durationIdx:1, channel:'email', singleCenter:'Any Centre', multiCenters:[] };
+
+function renderMaDurations(){
+  const list = maPlans[maState.scope].durations;
+  if(maState.durationIdx >= list.length) maState.durationIdx = 1;
+  const grid = document.getElementById('ma-duration-grid');
+  grid.innerHTML = list.map((d,i) => `
+    <div class="ma-duration-card ${i===maState.durationIdx?'selected':''}" data-idx="${i}" onclick="pickDuration(this)">
+      <div class="p">$${d.price}</div>
+      <div class="l">${d.len}</div>
+    </div>`).join('');
+}
+
+function pickScope(el){
+  document.querySelectorAll('#ma-scope-tabs .ma-scope-tab').forEach(t=>t.classList.remove('selected'));
+  el.classList.add('selected');
+  maState.scope = el.dataset.scope;
+  renderMaDurations();
+  renderMaCenterField();
+  updateMaSummary();
+}
+function pickDuration(el){
+  document.querySelectorAll('#ma-duration-grid .ma-duration-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  maState.durationIdx = parseInt(el.dataset.idx);
+  updateMaSummary();
+}
+function pickChannel(el){
+  document.querySelectorAll('#ma-channel-row .ma-channel').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  maState.channel = el.dataset.channel;
+  updateMaSummary();
+}
+function updateMaSummary(){
+  const plan = maPlans[maState.scope];
+  const d = plan.durations[maState.durationIdx];
+  const total = d.price + maChannelFees[maState.channel];
+  document.getElementById('ma-summary-scope').textContent = `${plan.name} · ${d.len}`;
+  document.getElementById('ma-summary-channel').textContent = maChannelNames[maState.channel];
+  document.getElementById('ma-summary-price').textContent = `$${total}`;
+}
+
+/* ---- Visa application centre field: adapts to the chosen coverage scope ----
+   single -> pick exactly 1 centre from a dropdown
+   multi  -> check up to 5 centres from a list
+   all    -> read-only, every centre is automatically included */
+function renderMaCenterField(){
+  const wrap = document.getElementById('ma-center-wrap');
+  const label = document.getElementById('ma-center-label');
+  if(!wrap) return;
+
+  if(maState.scope === 'single'){
+    label.textContent = 'Visa application centre';
+    wrap.innerHTML = `
+      <select id="alert-center-single" onchange="maState.singleCenter=this.value">
+        <option>Any Centre</option>
+        ${vacCenters.map(c => `<option ${maState.singleCenter===c?'selected':''}>${c}</option>`).join('')}
+      </select>`;
+  } else if(maState.scope === 'multi'){
+    label.textContent = `Visa application centres (${maState.multiCenters.length}/${MA_MULTI_CAP} selected)`;
+    wrap.innerHTML = `
+      <div class="ma-center-checks" id="ma-center-checks">
+        ${vacCenters.map(c => {
+          const checked = maState.multiCenters.includes(c);
+          const atCap = !checked && maState.multiCenters.length >= MA_MULTI_CAP;
+          return `<label class="ma-center-check ${atCap?'disabled':''}">
+            <input type="checkbox" value="${c}" ${checked?'checked':''} ${atCap?'disabled':''} onchange="toggleMaCenter(this)"> ${c}
+          </label>`;
+        }).join('')}
+      </div>
+      <div class="ma-center-hint">Select up to ${MA_MULTI_CAP} centres to monitor.</div>`;
+  } else {
+    label.textContent = 'Visa application centres';
+    wrap.innerHTML = `<div class="ma-center-all">✓ All Schengen application centres are automatically included</div>`;
+  }
+}
+function toggleMaCenter(checkbox){
+  const c = checkbox.value;
+  if(checkbox.checked){
+    if(!maState.multiCenters.includes(c) && maState.multiCenters.length < MA_MULTI_CAP){
+      maState.multiCenters.push(c);
+    }
+  } else {
+    maState.multiCenters = maState.multiCenters.filter(x => x !== c);
+  }
+  renderMaCenterField();
+}
+function getCenterSummary(){
+  if(maState.scope === 'single') return maState.singleCenter || 'Any Centre';
+  if(maState.scope === 'multi') return maState.multiCenters.length ? maState.multiCenters.join(', ') : 'Any of 5 centres';
+  return 'All Schengen centres';
+}
+
+function openAlert(flag,name,available){
+  pendingAlertCountry = {flag,name,available};
+  document.getElementById('alert-country').textContent = flag+' '+name;
+  document.getElementById('alert-country2').textContent = name;
+
+  const title = document.getElementById('alert-title');
+  const note = document.getElementById('alert-noteinfo');
+  if(available){
+    title.textContent = 'Subscribe Alerts';
+    note.innerHTML = `<b>✓ ${flag} ${name} currently has open slots.</b> Subscribe below and we'll keep watching for cancellations, new dates, or changes — and email you instantly.`;
+  } else {
+    title.textContent = 'Notify Me Alerts';
+    note.innerHTML = `<b>ⓘ This starts monitoring.</b> We'll watch <span>${name}</span> and email you the instant a slot opens — then contact us and we'll book it for you.`;
+  }
+
+  // reset scope/duration/channel/centers to defaults each time the modal opens
+  document.querySelectorAll('#ma-scope-tabs .ma-scope-tab').forEach(t=>t.classList.remove('selected'));
+  document.querySelector('#ma-scope-tabs .ma-scope-tab[data-scope="single"]').classList.add('selected');
+  document.querySelectorAll('#ma-channel-row .ma-channel').forEach(c=>c.classList.remove('selected'));
+  document.querySelector('#ma-channel-row .ma-channel[data-channel="email"]').classList.add('selected');
+  maState = { scope:'single', durationIdx:1, channel:'email', singleCenter:'Any Centre', multiCenters:[] };
+  renderMaDurations();
+  renderMaCenterField();
+  updateMaSummary();
+
+  document.getElementById('modal-alert').classList.add('active');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+
+function checkAlertForm(){
+  const val = document.getElementById('alert-email').value.trim();
+  const ok = val.includes('@') && val.includes('.');
+  document.getElementById('activate-btn').disabled = !ok;
+  document.getElementById('alert-warn').style.display = ok ? 'none' : 'flex';
+}
+
+/* Continue button in the modal — gathers everything (coverage, duration, channel, center) and jumps
+   straight to the compact payment screen. No separate "choose plan" / "select centers" steps. */
+let flowState = {planName:'', duration:'', price:0, center:'Any Centre', email:''};
+let bookingContext = null; // the country object being subscribed to (for dashboard/email rendering)
+
+function activateAlert(){
+  const center = getCenterSummary();
+  const email = document.getElementById('alert-email').value.trim();
+  closeModal('modal-alert');
+
+  bookingContext = pendingAlertCountry;
+
+  const plan = maPlans[maState.scope];
+  const d = plan.durations[maState.durationIdx];
+  const total = d.price + maChannelFees[maState.channel];
+
+  flowState = {
+    planName: `${plan.name} · ${d.len} (${maChannelNames[maState.channel]})`,
+    duration: d.len,
+    price: total,
+    center: center,
+    email: email
+  };
+
+  renderPaymentScreen();
+  showView('payment');
+}
+
+function renderPaymentScreen(){
+  if(!bookingContext) return;
+  document.getElementById('pay-monitoring').textContent = `${bookingContext.flag} ${bookingContext.name} — ${flowState.center}`;
+  document.getElementById('pay-plan').textContent = flowState.duration;
+  document.getElementById('pay-contact').textContent = flowState.email || '—';
+  document.getElementById('pay-amount').textContent = '$'+flowState.price.toFixed(2);
+
+  document.getElementById('pay-side-flag').textContent = bookingContext.flag;
+  document.getElementById('pay-side-name').textContent = bookingContext.name;
+  document.getElementById('pay-side-center').textContent = flowState.center;
+  document.getElementById('pay-side-total').textContent = '$'+flowState.price.toFixed(2);
+}
+
+/* ---------------- monitors / dashboard ---------------- */
+let monitors = [
+  {id:'SUB-2026-0715-014', flag:'🇫🇷', name:'France', center:'Any Centre', plan:'7 Days Monitoring', duration:'7 Days', price:10, status:'monitoring', started:'15 Jul 2026'},
+  {id:'SUB-2026-0712-009', flag:'🇦🇹', name:'Austria', center:'New York VAC', plan:'30 Days Monitoring', duration:'30 Days', price:20, status:'monitoring', started:'12 Jul 2026'},
+];
+let selectedMonitorId = null;
+
+/* Called by "Proceed to Secure Payment" — records the subscription, then shows the success dashboard. */
+function completeSubscription(){
+  const sub = {
+    id: 'SUB-2026-' + Math.floor(1000 + Math.random()*8999),
+    flag: bookingContext?.flag || '🌍',
+    name: bookingContext?.name || 'Selected destination',
+    center: flowState.center || 'Any Centre',
+    plan: flowState.planName,
+    duration: flowState.duration,
+    price: flowState.price,
+    status: (bookingContext && bookingContext.available) ? 'available' : 'monitoring',
+    started: '20 Jul 2026'
+  };
+  monitors.unshift(sub);
+  renderDashboard();
+  showView('dashboard');
+}
+
+function renderDashboard(){
+  document.getElementById('dash-plan').textContent = flowState.planName || '—';
+  document.getElementById('dash-centers').textContent = flowState.center || '—';
+  document.getElementById('dash-dur').textContent = flowState.duration || '—';
+  document.getElementById('dash-expiry').textContent = '27 Jul 2026';
+  document.getElementById('dash-expiry2').textContent = '27 Jul 2026';
+
+  const successTitle = document.getElementById('dash-success-title');
+  const successText = document.getElementById('dash-success-text');
+  const bookingTicket = document.getElementById('booking-ticket');
+
+  if(bookingContext){
+    successTitle.textContent = `${bookingContext.flag} ${bookingContext.name} monitoring is live!`;
+    successText.textContent = `We've started monitoring ${bookingContext.name} and emailed you the current availability details. Contact us any time and we'll take care of the booking for you, or email us letting us know which slot you'd like to proceed with.`;
+    bookingTicket.style.display = 'grid';
+    document.getElementById('dash-dest').textContent = `${bookingContext.flag} ${bookingContext.name}`;
+    document.getElementById('dash-appcenter').textContent = flowState.center || 'Any Centre';
+  } else {
+    successTitle.textContent = 'Subscription activated!';
+    successText.textContent = "We'll start monitoring immediately and notify you as soon as an appointment is available — then we can book it for you.";
+    bookingTicket.style.display = 'none';
+  }
+
+  renderMonitorCards();
+}
+
+function renderMonitorCards(){
+  const grid = document.getElementById('monitorgrid');
+  if(!grid) return;
+  grid.innerHTML = monitors.map(m => `
+    <div class="monitorcard">
+      <div class="mc-top">
+        <span class="flag">${m.flag}</span>
+        <div>
+          <div class="mc-name">${m.name}</div>
+          <div class="mc-sub">${m.center}</div>
+        </div>
+        ${m.status === 'available'
+          ? `<span class="status-pill ok"><span class="d"></span>Available Now</span>`
+          : `<span class="status-pill no"><span class="d"></span>Monitoring</span>`}
+      </div>
+      <div class="mc-meta">
+        <div><span class="l">Plan</span><span class="v">${m.plan}</span></div>
+        <div><span class="l">Duration</span><span class="v">${m.duration}</span></div>
+        <div><span class="l">Price</span><span class="v">$${m.price}.00</span></div>
+      </div>
+      <div class="mc-actions">
+        <button class="btn btn-ghost btn-sm" onclick="viewMonitorDetails('${m.id}')">View Details</button>
+        <button class="btn btn-primary btn-sm" onclick="goToVisaServices('${m.id}')">Book Now →</button>
+      </div>
+    </div>`).join('');
+}
+
+function viewMonitorDetails(id){
+  const m = monitors.find(x => x.id === id);
+  if(!m) return;
+  selectedMonitorId = id;
+  document.getElementById('mm-flag').textContent = m.flag;
+  document.getElementById('mm-name').textContent = m.name;
+  document.getElementById('mm-center').textContent = m.center;
+  document.getElementById('mm-status').innerHTML = m.status === 'available'
+    ? `<span style="color:var(--green-700)">Available Now</span>`
+    : `<span style="color:var(--rust-700)">Monitoring</span>`;
+  document.getElementById('mm-plan').textContent = m.plan;
+  document.getElementById('mm-duration').textContent = m.duration;
+  document.getElementById('mm-price').textContent = '$' + m.price + '.00';
+  document.getElementById('mm-id').textContent = m.id;
+  document.getElementById('mm-started').textContent = m.started;
+  document.getElementById('mm-booknow').onclick = () => { closeModal('modal-monitor'); goToVisaServices(id); };
+  document.getElementById('modal-monitor').classList.add('active');
+}
+
+/* "Book Now" on a monitor card — navigates to the Visa Services page for that destination. */
+function goToVisaServices(id){
+  const m = monitors.find(x => x.id === id);
+  selectedMonitorId = id;
+  if(m){
+    document.getElementById('vs-destname').textContent = `${m.flag} ${m.name}`;
+    document.getElementById('vs-destsub').textContent = m.center;
+    document.getElementById('vs-contactdest').textContent = m.name;
+    document.getElementById('vs-statuspill').textContent = m.status === 'available' ? 'Available Now' : 'Monitoring';
+    document.getElementById('vs-mailto').href = `mailto:help@schengenvisaitineraryslot.com?subject=${encodeURIComponent('Booking request — '+m.name+' ('+m.id+')')}`;
+  }
+  showView('visaservices');
+}
+
+function backToDashboard(){
+  showView('dashboard');
+}
+
+function openEmailModal(){
+  const destLabel = document.getElementById('email-dest-label');
+  const title = document.getElementById('email-title');
+  const intro = document.getElementById('email-intro');
+  const center = document.getElementById('email-center');
+  const date = document.getElementById('email-date');
+  const cta = document.getElementById('email-cta');
+  const appCenter = flowState.center || 'Boston VAC';
+
+  if(bookingContext){
+    title.textContent = `Your ${bookingContext.name} slot is still open!`;
+    intro.innerHTML = `Hello John,<br>Great news — the slot you're monitoring is still available. Contact us and we'll book it for you.`;
+    destLabel.textContent = `${bookingContext.flag} Destination`;
+    center.textContent = `${bookingContext.name} · via ${appCenter}`;
+    date.textContent = bookingContext.date;
+    cta.textContent = 'Contact us to book →';
+  } else {
+    title.textContent = 'Appointment available!';
+    intro.innerHTML = 'Hello John,<br>Great news — a new appointment is available at your selected visa center. Contact us and we\'ll book it for you.';
+    destLabel.textContent = '🇺🇸 Visa center';
+    center.textContent = appCenter + ', USA';
+    date.textContent = '28 Jul 2026 · 09:30 AM';
+    cta.textContent = 'Contact us to book →';
+  }
+  document.getElementById('modal-email').classList.add('active');
+}
+
+/* ---------------- init ---------------- */
+renderCountryGrid();
+renderAvailTable();
+renderMonitorCards();
+</script>
+
+</body>
+</html>
